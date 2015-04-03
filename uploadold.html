@@ -43,36 +43,40 @@
     </div>
   </nav>
   
+  
+  <form action="javascript:;">
+    <input id="lefile" type="file" style="display:none">
+      <div class="input-append">
+        <input id="photoCover" class="form-control" type="text" readonly>
+         <span class="input-group-btn">
+           <button class="btn btn-default btn-sm" onclick="$('input[id=lefile]').click();">Browse</button>
+          </span>
+      </div>
+        
+    <input type="submit" class="btn btn-primary" id="update" value="送信" />
+  </form>
+
+
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     
     <body>
-    <div class=container>
-        
-        <div class="row">
-        <form action="javascript:;">
-          <input id="lefile" type="file" style="display:none">
-            <div class="col-xs-8 form-inline">
-                <input id="filepath" class="form-control" type="text">
-                <a class="btn btn-default" onclick="$('input[id=lefile]').click();">Browse</a>
-                <input type="submit" class="btn btn-primary" id="update" value="送信" />
-            </div>
-        </form>
-        </div>
-        
+    
       <script>
       $('input[id=lefile]').change(function() {
-        $('#filepath').val($(this).val().replace(/(c:\\)*fakepath\\/i, ''));
+        $('#photoCover').val($(this).val());
       });
       
       $(function(){
           $("#update").bind("click", function(){
-            $("p.alert").html("<img src='./pic/loader.gif'/>");
-            
+
+            // FormData オブジェクトを作成
             var fd = new FormData();
         
+            // テキストデータおよびアップロードファイルが設定されていれば追加
             if ( $("#lefile").val() !== '' ) {
               fd.append( "file", $("#lefile").prop("files")[0] );
             }
@@ -86,20 +90,16 @@
               contentType : false
             };
             
+            // ajax送信
             $.ajax( "./upload.php", postData ).done(function( text ){
-              $("p.alert").html(text);
+              $("p.text").append(text);
             });
             
           });
         });
         </script>
         
-        <p></p>
+        <p class="text"></p>
         
-        <div class="row">
-        <p class="alert"></p>
-        </div>
-        
-        </div>
     </body>
 </html>

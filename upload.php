@@ -3,6 +3,7 @@
 // TODO : 小節、BPM、STOP、LN
 header("Content-type: text/html; charset=utf-8");
 mb_internal_encoding("utf-8");
+date_default_timezone_set('Asia/Tokyo');
 
 function get_table($md5, $url){
 	    $json = file_get_contents($url);
@@ -14,8 +15,8 @@ function get_table($md5, $url){
 		return FALSE;
 }
 
-if(is_uploaded_file($_FILES["upfile"]["tmp_name"])){
-	$get_file = $_FILES["upfile"]["tmp_name"];
+if(is_uploaded_file($_FILES["file"]["tmp_name"])){
+	$get_file = $_FILES["file"]["tmp_name"];
 
 	// load bms file
 	$bms_data = file_get_contents($get_file);
@@ -97,28 +98,28 @@ if(is_uploaded_file($_FILES["upfile"]["tmp_name"])){
 							$key[7][(int)$now_measure][] = $note_pos;
 							continue 2;
 						case 56:
-							$lnkey[0][(int)$now_measure][] = $note_pos;
+							$lnkey[0] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 51:
-							$lnkey[1][(int)$now_measure][] = $note_pos;
+							$lnkey[1] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 52:
-							$lnkey[2][(int)$now_measure][] = $note_pos;
+							$lnkey[2] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 53:
-							$lnkey[3][(int)$now_measure][] = $note_pos;
+							$lnkey[3] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 54:
-							$lnkey[4][(int)$now_measure][] = $note_pos;
+							$lnkey[4] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 55:
-							$lnkey[5][(int)$now_measure][] = $note_pos;
+							$lnkey[5] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 58:
-							$lnkey[6][(int)$now_measure][] = $note_pos;
+							$lnkey[6] = (int)$now_measure + $note_pos;
 							continue 2;
 						case 59:
-							$lnkey[7][(int)$now_measure][] = $note_pos;
+							$lnkey[7] = (int)$now_measure + $note_pos;
 							continue 2;
 						}
 					}
@@ -135,12 +136,20 @@ if(is_uploaded_file($_FILES["upfile"]["tmp_name"])){
 	}
 
 	if($header_map["TITLE"] == null){
-		echo "このBMSファイルには#TITLEが存在しなかったため、アップロードは行われませんでした";
+		echo '<div class="alert alert-danger">';
+		echo "このBMSファイルには#TITLEが存在しなかったため、アップロードは行われませんでした。 ".date("H:i:s");
+		echo "</div>";
 		exit();
 	}
 	if($header_map["RANDOM"] != null){
-		echo "このBMSファイルには#RANDOMが存在したため、アップロードは行われませんでした";
+		echo '<div class="alert alert-danger">';
+		echo "このBMSファイルには#RANDOMが存在したため、アップロードは行われませんでした。 ".date("H:i:s");
+		echo "</div>";
 		exit();
+	}
+	
+	for($key_num = 0; $key_num <= 7; $key_num++){
+		sort($lnkey[$key_num]);
 	}
 	
 	//out json
@@ -167,17 +176,22 @@ if(is_uploaded_file($_FILES["upfile"]["tmp_name"])){
 
 	$file_upload_success = file_put_contents($file_name, json_encode($output_json));
 	if(!($file_upload_success === FALSE)){
-		echo "upload success! : ".$file_name."<br />";
-		echo "<a href=\""."http://www.dream-pro.info/~lavalse/LR2IR/search.cgi?mode=ranking&bmsmd5=".$file_hash."\">"."LR2IR"."</a><br />";
-		echo "<a href=\""."./score.php?md5=".$file_hash."\">"."score"."</a>";
+		echo '<div class="alert alert-success">';
+		echo "アップロードに成功しました。 : ".$header_map["TITLE"].", ".date("H:i:s")."<br />";
+		echo "<a href=\""."./score.php?md5=".$file_hash."\">"."Score"."</a>";
+		echo '</div>';
 	}
 	else{
-		echo "譜面のアップロードに失敗しました。<br />しばらく時間をおいてからもう一度試してみてください";
+		echo '<div class="alert alert-danger">';
+		echo "譜面のアップロードに失敗しました。<br />しばらく時間をおいてからもう一度試してみてください。 ".date("H:i:s");
+		echo '</div>';
 	}
 }
 
 else{
+		echo '<div class="alert alert-danger">';
 		echo "ファイルが選択されていません";
+		echo "</div>";
 }
 
 ?>

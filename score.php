@@ -11,7 +11,6 @@ header("Content-type: text/html; charset=utf-8");
 // json2score
 
 // isset
-
 if(isset($_GET["md5"])){
 	$md5 = $_GET["md5"];
 	$md5_flag = true;
@@ -43,11 +42,29 @@ if($md5_flag){
 		exit();
 	}
 	
+	// calc longnotes
+	for($key_num = 0; $key_num <= 7; $key_num++){
+		for($ci = 0; $ci < count($data["lnkey"][$key_num]); $ci++){
+			if($ci % 2 == 0){
+				$ln_start = $data["lnkey"][$key_num][$ci];
+				$ln_start_flag = !$ln_start_flag;
+			}
+			else{
+				$ln_end = $data["lnkey"][$key_num][$ci];
+				
+				$lnnote[$key_num][(int)$ln_start][]["start_pos"] = $ln_start - (int)$ln_start;
+				$lnnote[$key_num][(int)$ln_start][]["length"] = $ln_end - $ln_start;
+			}
+		}
+	}
+	
 	$lgnote = $data["lgkey"];
-	$lnnote = $data["lnkey"];
 	
 	$measure_len = $data["measure_length"];
 
+
+	// draw header data:
+	
 	echo $data["TITLE"].", ";
 	echo $data["GENRE"].", ";
 	echo $data["ARTIST"].", ";
@@ -59,13 +76,15 @@ if($md5_flag){
 	echo $data["notes"]."notes, ";
 	echo $data["BPM"]."bpm";
 
-	// 半角スペースのエスケープ
-
 	echo '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="ja">ツイート</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+\'://platform.twitter.com/widgets.js\';fjs.parentNode.insertBefore(js,fjs);}}(document, \'script\', \'twitter-wjs\');</script>';
+
+	// end draw header data
+
 	// draw table:
 	echo "<br /><table><tbody><tr>";
-
+	
+	
 	for($i = 0; $i < ($data["measure"] + 1) / 4; $i++){
 		echo '<td valign="bottom">';
 		
@@ -97,6 +116,7 @@ if($md5_flag){
 			// draw score:
 
 			for($key_num = 0; $key_num <= 7; $key_num++){
+				// legacy notes
 				for($mi = 0; $mi < count($lgnote[$key_num][$now_measure]); $mi++){
 					
 					//calc width:
@@ -119,11 +139,8 @@ if($md5_flag){
 					else if((int)$key_num % 2 == 0)
 						echo '<img src="./pic/blue.gif" style="top:'.$top.'px;left:'.$left.'px">';
 				}
+				// long notes
 				
-				for($mi = 0; $mi < count($lnnote[$key_num][$now_measure]); $mi++){
-				
-					
-				}
 			}
 
 			// end draw score
@@ -141,6 +158,8 @@ if($md5_flag){
 	}
 
 	echo "</tr></tbody></table>";
+	
+	// end draw table
 }
 else{
 	echo "md5 is not specified.";
