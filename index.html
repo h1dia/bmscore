@@ -20,63 +20,57 @@
     
   </head>
   
-  <form action="javascript:;">
-    <input id="lefile" type="file" style="display:none">
-      <div class="input-append">
-        <input id="photoCover" class="form-control" type="text" readonly>
-         <span class="input-group-btn">
-           <button class="btn btn-default btn-sm" onclick="$('input[id=lefile]').click();">Browse</button>
-          </span>
-      </div>
-        
-    <input type="submit" class="btn btn-primary" id="update" value="送信" />
-  </form>
+  <nav class="navbar navbar-default">
+    <div class="container">
+        <!-- モバイル表示 -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle"
+            data-toggle="collapse" data-target="#navbar-menu">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="./index.html">BMScore</a>
+        </div>
 
+        <!-- ヘッダ情報 -->
+        <div class="collapse navbar-collapse" id="navbar-menu">
+          
+        <!-- リストの配置 -->
+        <ul class="nav navbar-nav">
+            <li><a href="upload.html">Upload</a></li>
+            <li><a href="#">Insane</a></li>
+        </ul>
+        
+        <p class="navbar-text">Search</p>
+          <form class="navbar-form">
+            <div class="form-group">
+               <input type="text" class="form-control" placeholder="キーワード">
+            </div>
+            <button type="submit" class="btn btn-info">検索</button>
+          </form>
+          
+        </div>
+        
+    </div>
+  </nav>
+  
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     
     <body>
-      <script>
-      $('input[id=lefile]').change(function() {
-        $('#photoCover').val($(this).val());
-      });
-      
-      $(function(){
-          $("#update").bind("click", function(){
-            $("#loading").html("<img src='./pic/loader.gif'/>");
-            
-            // FormData オブジェクトを作成
-            var fd = new FormData();
+    <div class=container>
         
-            // テキストデータおよびアップロードファイルが設定されていれば追加
-            if ( $("#lefile").val() !== '' ) {
-              fd.append( "file", $("#lefile").prop("files")[0] );
-            }
+        <h1>Index</h1>
         
-            // dataにFormDataを指定する場合 processData,contentTypeをfalseにしてjQueryがdataを処理しないようにする
-            var postData = {
-              type : "POST",
-              dataType : "text",
-              data : fd,
-              processData : false,
-              contentType : false
-            };
-            
-            // ajax送信
-            $.ajax( "./upload.php", postData ).done(function( text ){
-              $("#loading").empty();
-              $("p.text").append(text);
-            });
-            
-          });
-        });
-        </script>
+        <p></p>
         
-        <p class="text"></p>
+        <div class="row">
+        <p class="alert"></p>
+        </div>
         
-        <p id="loading">ここのメッセージが非同期通信後に変更されます。</p>
-        
+        </div>
     </body>
 </html>

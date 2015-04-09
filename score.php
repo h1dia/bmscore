@@ -1,10 +1,60 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Index</title>
 
-<head>
-<style type="text/css"><!-- div,span,div img{position:absolute;}td,th{font-size:16px;}body{color:white;background:black} --></style>
-<link type="text/css" rel="stylesheet" href="css/style.css"/>
-</head>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+  </head>
+  
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- ヘッダ情報 -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">BMScore</a>
+        </div>
+        <!-- リストの配置 -->
+        <ul class="nav navbar-nav">
+            <li><a href="upload.html">Upload</a></li>
+            <li><a href="#">Insane</a></li>
+        </ul>
+        
+    <p class="navbar-text">Search</p>
+        <form class="navbar-form">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="キーワード">
+            </div>
+            <button type="submit" class="btn btn-info">検索</button>
+        </form>
+        
+    </div>
+  </nav>
+  
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    
+    <style type="text/css">
+	<!-- div.s,span.s,div.s img.s{position:absolute;}td,th{font-size:16px;}body{color:white;background:black;padding-top:70px;} -->
+	</style>
+
 <body>
+
+<div class="container-fluid">
+
 <?php
 
 header("Content-type: text/html; charset=utf-8");
@@ -86,7 +136,7 @@ if($md5_flag){
 	
 	
 	for($i = 0; $i < ($data["measure"] + 1) / 4; $i++){
-		echo '<td valign="bottom">';
+		echo '<td class="s" valign="bottom" style="padding-top: 5px; padding-right: 5px;">';
 		
 		// if exist measure num 000
 		if(0){
@@ -108,10 +158,10 @@ if($md5_flag){
 				$height_multiply = 1;
 			}
 			echo '<table cellpadding="0" cellspacing="0" width="168" style="border:1px white solid" height="'.$height * $height_multiply.'">';
-			echo '<tbody><tr><td width="134" valign="top"><div style="width:134px;height:'.$height * $height_multiply.'">';
+			echo '<tbody><tr><td class="s" width="134" valign="top"><div class="s" style="width:134px;height:'.$height * $height_multiply.'">';
 			
 			for($bi = 3; $bi > 0; $bi--){
-				echo '<img src="./pic/bar.gif" style="top:'.($height * $height_multiply * ($bi / 4) - 2).'px;left:0px">';
+				echo '<img class="s" src="./pic/bar.gif" style="top:'.($height * $height_multiply * ($bi / 4) - 2).'px;left:0px">';
 			}
 			// draw score:
 
@@ -131,13 +181,13 @@ if($md5_flag){
 					
 					// scr
 					if($key_num == 0)
-						echo '<img src="./pic/scr.gif" style="top:'.$top.'px;left:'.$scr_left.'px">';
+						echo '<img class="s" src="./pic/scr.gif" style="top:'.$top.'px;left:'.$scr_left.'px">';
 					// white
 					else if((int)$key_num % 2 == 1)
-						echo '<img src="./pic/white.gif" style="top:'.$top.'px;left:'.$left.'px">';
+						echo '<img class="s" src="./pic/white.gif" style="top:'.$top.'px;left:'.$left.'px">';
 					// blue
 					else if((int)$key_num % 2 == 0)
-						echo '<img src="./pic/blue.gif" style="top:'.$top.'px;left:'.$left.'px">';
+						echo '<img class="s" src="./pic/blue.gif" style="top:'.$top.'px;left:'.$left.'px">';
 				}
 				// long notes
 				
@@ -147,9 +197,9 @@ if($md5_flag){
 
 			echo '</div></td>';
 			// draw measure
-			echo '<th width="32" bgcolor="gray">';
+			echo '<th class="s" width="32" bgcolor="gray">';
 			if($height * $height_multiply >= 24){
-				echo $now_measure;
+				echo '<center>'.$now_measure.'</center>';
 			}
 			
 			echo '</th></tr></tbody></table>';
@@ -165,6 +215,6 @@ else{
 	echo "md5 is not specified.";
 }
 ?>
-
+</div>
 </body>
 </html>

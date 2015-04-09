@@ -17,10 +17,21 @@ function get_table($md5, $url){
 
 if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	$get_file = $_FILES["file"]["tmp_name"];
-
+	
 	// load bms file
 	$bms_data = file_get_contents($get_file);
 	$file_hash = md5($bms_data);
+
+	// err_check
+	if(!is_string($bms_data)){
+		echo '<div class="alert alert-danger">';
+		echo "文字列ではありません ".date("H:i:s");
+		echo "</div>";
+		exit();
+	}
+
+
+
 
 	// convert utf8
 	$bms_data = mb_convert_encoding($bms_data, "UTF-8", "ASCII, SJIS, sjis-win, EUC-JP");
@@ -138,6 +149,12 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	if($header_map["TITLE"] == null){
 		echo '<div class="alert alert-danger">';
 		echo "このBMSファイルには#TITLEが存在しなかったため、アップロードは行われませんでした。 ".date("H:i:s");
+		echo "</div>";
+		exit();
+	}
+	if($total_notes <= 0){
+		echo '<div class="alert alert-danger">';
+		echo "このBMSファイルには可視ノーツが1つも存在しなかったため、アップロードは行われませんでした。 ".date("H:i:s");
 		echo "</div>";
 		exit();
 	}
