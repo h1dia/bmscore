@@ -7,6 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Bootstrap -->
+    <link href="css/score.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -20,20 +21,28 @@
   
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
-        <!-- ヘッダ情報 -->
+    	
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">BMScore</a>
+            <button type="button" class="navbar-toggle"
+            data-toggle="collapse" data-target="#navbar-menu">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="./index.html">BMScore</a>
         </div>
+    	
+        <div class="collapse navbar-collapse" id="navbar-menu">
+    	
         <!-- リストの配置 -->
         <ul class="nav navbar-nav">
             <li><a href="upload.html">Upload</a></li>
             <li><a href="#">Insane</a></li>
         </ul>
         
-    <p class="navbar-text">Search</p>
         <form class="navbar-form">
             <div class="form-group">
-                <input type="text" class="form-control" placeholder="キーワード">
+                <input type="text" class="form-control" placeholder="キーワードを入力">
             </div>
             <button type="submit" class="btn btn-info">検索</button>
         </form>
@@ -65,6 +74,7 @@ if(isset($_GET["md5"])){
 else{
 	$md5_flag = false;
 }
+
 if(isset($_GET["h"])){
 	$height = $_GET["h"];
 }
@@ -73,6 +83,10 @@ else{
 }
 
 if($md5_flag){
+	if(!file_exists("./json/".$md5.".json")){
+		echo "この譜面はまだ登録されていません。";
+		exit();
+	}
 	
 	$json = file_get_contents("./json/".$md5.".json");
 	$data = json_decode($json, true);
@@ -84,8 +98,9 @@ if($md5_flag){
 		echo "</pre>";
 	}
 	
-	if($data["TITLE"] == null && $data["BPM"] == null){
-		echo "このBMSファイルは存在しないか、壊れています。";
+	if($data["TITLE"] == null){
+		echo "譜面が壊れているかもしれません。管理者に問い合わせるか、BMSファイルをアップロードし直してください。<br/>";
+		echo "無効な譜面のmd5 : ".$md5;
 		exit();
 	}
 	
@@ -112,7 +127,7 @@ if($md5_flag){
 
 	// draw header data:
 	
-	echo $data["TITLE"].", ";
+	echo '<span class="title">'.$data["TITLE"]."</span> ";
 	echo $data["GENRE"].", ";
 	echo $data["ARTIST"].", ";
 
@@ -209,7 +224,7 @@ if($md5_flag){
 	// end draw table
 }
 else{
-	echo "md5 is not specified.";
+	echo "md5が指定されていません。";
 }
 ?>
 </div>

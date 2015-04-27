@@ -39,7 +39,7 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	$bms_string_array = explode("\n", $bms_data);
 	$file_name = "./json/".$file_hash.".json";
 
-	if($insane_dif = get_table($file_hash, "http://bmsnormal2.syuriken.jp/insane/data.json"))
+	if($insane_dif = get_table($file_hash, "./table/insane/data.json"))
 		$difficulty[] = "★".$insane_dif;
 
 	$total_notes = 0;
