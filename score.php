@@ -65,7 +65,6 @@
 
 <?php
 // json2score
-
 // isset
 if(isset($_GET["md5"])){
 	$md5 = $_GET["md5"];
@@ -74,14 +73,12 @@ if(isset($_GET["md5"])){
 else{
 	$md5_flag = false;
 }
-
 if(isset($_GET["h"])){
 	$height = $_GET["h"];
 }
 else{
 	$height = 128;
 }
-
 if($md5_flag){
 	if(!file_exists("./json/".$md5.".json")){
 		echo "この譜面はまだ登録されていません。";
@@ -123,26 +120,19 @@ if($md5_flag){
 	$lgnote = $data["lgkey"];
 	
 	$measure_len = $data["measure_length"];
-
-
 	// draw header data:
 	
 	echo '<span class="title">'.$data["TITLE"]."</span> ";
 	echo $data["GENRE"].", ";
 	echo $data["ARTIST"].", ";
-
 	for($i = 0; $i < count($data["difficulty"]); $i++){
 		echo $data["difficulty"][$i].", ";
 	}
-
 	echo $data["notes"]."notes, ";
 	echo $data["BPM"]."bpm";
-
 	echo '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="ja">ツイート</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+\'://platform.twitter.com/widgets.js\';fjs.parentNode.insertBefore(js,fjs);}}(document, \'script\', \'twitter-wjs\');</script>';
-
 	// end draw header data
-
 	// draw table:
 	echo "<br /><table><tbody><tr>";
 	
@@ -176,7 +166,6 @@ if($md5_flag){
 				echo '<img class="s" src="./pic/bar.gif" style="top:'.($height * $height_multiply * ($bi / 4) - 2).'px;left:0px">';
 			}
 			// draw score:
-
 			for($key_num = 0; $key_num <= 7; $key_num++){
 				// legacy notes
 				for($mi = 0; $mi < count($lgnote[$key_num][$now_measure]); $mi++){
@@ -185,7 +174,6 @@ if($md5_flag){
 					$scr_left = 0;
 					// scr pic width:36px, key_width:13px
 					$left = 28 + 1 + 13 * $key_num;
-
 					//calc height:
 					$top_pos = $lgnote[$key_num][$now_measure][$mi];
 					//pic height:4px
@@ -204,9 +192,7 @@ if($md5_flag){
 				// long notes
 				
 			}
-
 			// end draw score
-
 			echo '</div></td>';
 			// draw measure
 			echo '<th class="s" width="32" bgcolor="gray">';
@@ -218,7 +204,6 @@ if($md5_flag){
 		}
 		echo '</td>';
 	}
-
 	echo "</tr></tbody></table>";
 	
 	// end draw table

@@ -1,9 +1,7 @@
 <?php
 // bms2json
 // TODO : 小節、BPM、STOP、LN
-header("Content-type: text/html; charset=utf-8");
-mb_internal_encoding("utf-8");
-date_default_timezone_set('Asia/Tokyo');
+include_once('mysql.php');
 
 function get_table($md5, $url){
 	    $json = file_get_contents($url);
@@ -12,8 +10,13 @@ function get_table($md5, $url){
 			if($table[$i]->md5 === $md5)
 				return $table[$i]->level;
 		}
-		return FALSE;
+	return FALSE;
 }
+
+$db = new ConnectMysql();
+
+mb_internal_encoding("utf-8");
+date_default_timezone_set('Asia/Tokyo');
 
 if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	$get_file = $_FILES["file"]["tmp_name"];
@@ -29,9 +32,6 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 		echo "</div>";
 		exit();
 	}
-
-
-
 
 	// convert utf8
 	$bms_data = mb_convert_encoding($bms_data, "UTF-8", "ASCII, SJIS, sjis-win, EUC-JP");
@@ -57,7 +57,8 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 			if(is_numeric($channel[0])){
 				$now_measure = (int)substr($channel[0], 0, 3);
 				$max_measure = (int)max($now_measure, $max_measure);
-
+				
+				
 				// -1 is delete return char
 				$resolution = (strlen($channel[1]) - 1) / 2;
 				
@@ -184,6 +185,7 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 
 		"lgkey" => $key,
 		"lnkey" => $lnkey,
+		
 		/*
 		"landmine" => ,
 		*/
@@ -206,9 +208,9 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 }
 
 else{
-		echo '<div class="alert alert-danger">';
-		echo "ファイルが選択されていません";
-		echo "</div>";
+	echo '<div class="alert alert-danger">';
+	echo "ファイルが選択されていません";
+	echo "</div>";
 }
 
 ?>
