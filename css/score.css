@@ -1,0 +1,17 @@
+.title{
+    text-shadow: 2px 2px 3px #999;
+}
+
+div.s,span.s,div.s img.s{
+    position:absolute;
+}
+
+td,th{
+    font-size:16px;
+}
+
+body{
+    color:white;
+    background:black;
+    padding-top:70px;
+}

@@ -1,0 +1,16 @@
+create table bms(
+id int,
+hash varchar(32),
+genre text,
+title text,
+artist text,
+minbpm int,
+maxbpm int,
+notes text,
+level int,
+keynum int,
+judgerank int,
+updatedate datetime,
+estimate int,
+estimateweek int
+);
