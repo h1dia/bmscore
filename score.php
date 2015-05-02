@@ -65,6 +65,8 @@
 
 <?php
 // json2score
+include_once('table.php');
+
 // isset
 if(isset($_GET["md5"])){
 	$md5 = $_GET["md5"];
@@ -73,12 +75,14 @@ if(isset($_GET["md5"])){
 else{
 	$md5_flag = false;
 }
+
 if(isset($_GET["h"])){
 	$height = $_GET["h"];
 }
 else{
 	$height = 128;
 }
+
 if($md5_flag){
 	if(!file_exists("./json/".$md5.".json")){
 		echo "この譜面はまだ登録されていません。";
@@ -87,6 +91,7 @@ if($md5_flag){
 	
 	$json = file_get_contents("./json/".$md5.".json");
 	$data = json_decode($json, true);
+	
 	echo '<title>'.$data["TITLE"].'</title>';
 	
 	if(isset($_GET["dbg"])){
@@ -101,33 +106,17 @@ if($md5_flag){
 		exit();
 	}
 	
-	// calc longnotes
-	for($key_num = 0; $key_num <= 7; $key_num++){
-		for($ci = 0; $ci < count($data["lnkey"][$key_num]); $ci++){
-			if($ci % 2 == 0){
-				$ln_start = $data["lnkey"][$key_num][$ci];
-				$ln_start_flag = !$ln_start_flag;
-			}
-			else{
-				$ln_end = $data["lnkey"][$key_num][$ci];
-				
-				$lnnote[$key_num][(int)$ln_start][]["start_pos"] = $ln_start - (int)$ln_start;
-				$lnnote[$key_num][(int)$ln_start][]["length"] = $ln_end - $ln_start;
-			}
-		}
-	}
-	
 	$lgnote = $data["lgkey"];
-	
+	$lnlength = $data["lnlength"];
 	$measure_len = $data["measure_length"];
+
 	// draw header data:
+	$insane_difficulty = new DifficultyTable();
 	
+	echo $insane_difficulty->getDifficulty('./table/insane/', $md5)." ";
 	echo '<span class="title">'.$data["TITLE"]."</span> ";
 	echo $data["GENRE"].", ";
 	echo $data["ARTIST"].", ";
-	for($i = 0; $i < count($data["difficulty"]); $i++){
-		echo $data["difficulty"][$i].", ";
-	}
 	echo $data["notes"]."notes, ";
 	echo $data["BPM"]."bpm";
 	echo '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="ja">ツイート</a>
@@ -167,13 +156,28 @@ if($md5_flag){
 			}
 			// draw score:
 			for($key_num = 0; $key_num <= 7; $key_num++){
+				//calc width:
+				$scr_left = 0;
+				// scr pic width:36px, key_width:13px
+				$left = 28 + 1 + 13 * $key_num;
+				
+				// long notes
+				for($mi = 0; $mi < count($lnlength[$key_num][$now_measure]["start"]); $mi++){
+					$top = (($height * $lnlength[$key_num][$now_measure]["start"][$mi]) * $height_multiply);
+					
+					// scr
+					if($key_num == 0)
+						echo '<img class="s" src="./pic/scr.gif" style="top:'.$top.'px;left:'.$scr_left.'px;height:'.($lnlength[$key_num][$now_measure]["end"][$mi] - $lnlength[$key_num][$now_measure]["start"][$mi]) * $height * $height_multiply.'px;width:33px">';
+					// white
+					else if((int)$key_num % 2 == 1)
+						echo '<img class="s" src="./pic/white.gif" style="top:'.$top.'px;left:'.$left.'px;height:'.($lnlength[$key_num][$now_measure]["end"][$mi] - $lnlength[$key_num][$now_measure]["start"][$mi]) * $height * $height_multiply.'px;width:11px">';
+					// blue
+					else if((int)$key_num % 2 == 0)
+						echo '<img class="s" src="./pic/blue.gif" style="top:'.$top.'px;left:'.$left.'px;height:'.($lnlength[$key_num][$now_measure]["end"][$mi] - $lnlength[$key_num][$now_measure]["start"][$mi]) * $height * $height_multiply.'px;width:11px">';
+				}
+				
 				// legacy notes
 				for($mi = 0; $mi < count($lgnote[$key_num][$now_measure]); $mi++){
-					
-					//calc width:
-					$scr_left = 0;
-					// scr pic width:36px, key_width:13px
-					$left = 28 + 1 + 13 * $key_num;
 					//calc height:
 					$top_pos = $lgnote[$key_num][$now_measure][$mi];
 					//pic height:4px
@@ -189,7 +193,7 @@ if($md5_flag){
 					else if((int)$key_num % 2 == 0)
 						echo '<img class="s" src="./pic/blue.gif" style="top:'.$top.'px;left:'.$left.'px">';
 				}
-				// long notes
+				
 				
 			}
 			// end draw score

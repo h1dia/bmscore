@@ -3,16 +3,6 @@
 // TODO : 小節、BPM、STOP、LN
 include_once('mysql.php');
 
-function get_table($md5, $url){
-	    $json = file_get_contents($url);
-		$table = json_decode($json);
-		for($i = 0; $i < count($table); $i++){
-			if($table[$i]->md5 === $md5)
-				return $table[$i]->level;
-		}
-	return FALSE;
-}
-
 $db = new ConnectMysql();
 
 mb_internal_encoding("utf-8");
@@ -28,7 +18,7 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	// err_check
 	if(!is_string($bms_data)){
 		echo '<div class="alert alert-danger">';
-		echo "文字列ではありません ".date("H:i:s");
+		echo "ファイルがBMSじゃないような気がします。 ".date("H:i:s");
 		echo "</div>";
 		exit();
 	}
@@ -39,25 +29,30 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	$bms_string_array = explode("\n", $bms_data);
 	$file_name = "./json/".$file_hash.".json";
 
-	if($insane_dif = get_table($file_hash, "./table/insane/data.json"))
-		$difficulty[] = "★".$insane_dif;
-
 	$total_notes = 0;
 	$max_measure = 0;
 	
-	$ln_end = false;
+	// chk LNOBJ
+	for($i = 0; $i < count($bms_string_array); $i++){
+		if(substr($bms_string_array[$i], 0, 6) == "#LNOBJ"){
+			$lnobj_array[substr($bms_string_array[$i], 7, 2)] = true;
+		}
+	}
+	
 	//parse bms2json
 	for($i = 0; $i < count($bms_string_array); $i++){
+		// chk command
 		if(substr($bms_string_array[$i], 0, 1) != "#")
 			continue;
+			
 		else{
 			$temp_str = substr($bms_string_array[$i], 1);
 			$channel = explode(":", $temp_str, 2);
 
 			if(is_numeric($channel[0])){
+				$before_measure = $now_measure;
 				$now_measure = (int)substr($channel[0], 0, 3);
 				$max_measure = (int)max($now_measure, $max_measure);
-				
 				
 				// -1 is delete return char
 				$resolution = (strlen($channel[1]) - 1) / 2;
@@ -68,72 +63,106 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 				
 				for($step = 0; $step < $resolution; $step++){
 					if(!(substr($channel[1], $step * 2, 2) === "00")){
+						
 						// if this command is visible note
-						if(substr($channel[0], 3, 2) >= 11 && substr($channel[0], 3, 2) <= 19)
-							$total_notes++;
-						
-						$note_pos = (($resolution - $step) / $resolution);
-						
-						if(substr($channel[0], 3, 2)  >= 11 && substr($channel[0], 3, 2) <= 59){
-							if($ln_end){
+						if(substr($channel[0], 3, 2) >= 11 && substr($channel[0], 3, 2) <= 59){
+							
+							$before_note_pos = $note_pos;
+							$note_pos = (($resolution - $step) / $resolution);
+							// if this id is not lnobj
+							if($lnobj_array[substr($channel[1], $step * 2, 2)] != true){
 								$total_notes++;
-								$ln_end = !$ln_end;
+								
+								switch (substr($channel[0], 3, 2)){
+								case 16:
+									$key[0][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 11:
+									$key[1][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 12:
+									$key[2][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 13:
+									$key[3][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 14:
+									$key[4][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 15:
+									$key[5][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 18:
+									$key[6][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 19:
+									$key[7][(int)$now_measure][] = $note_pos;
+									continue 2;
+								case 56:
+									$lnkey[0][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 51:
+									$lnkey[1][]= (int)$now_measure + $note_pos;
+									continue 2;
+								case 52:
+									$lnkey[2][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 53:
+									$lnkey[3][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 54:
+									$lnkey[4][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 55:
+									$lnkey[5][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 58:
+									$lnkey[6][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 59:
+									$lnkey[7][] = (int)$now_measure + $note_pos;
+									continue 2;
+								}
 							}
+							// LNOBJ
 							else{
-								$ln_end = !$ln_end;
+								switch (substr($channel[0], 3, 2)){
+								case 16:
+									$lnkey[0][] = $before_note_pos + $before_measure;
+									$lnkey[0][] = (int)$now_measure + $note_pos;
+								continue 2;
+								case 11:
+									$lnkey[1][] = $before_note_pos + $before_measure;
+									$lnkey[1][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 12:
+									$lnkey[2][] = $before_note_pos + $before_measure;
+									$lnkey[2][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 13:
+									$lnkey[3][] = $before_note_pos + $before_measure;
+									$lnkey[3][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 14:
+									$lnkey[4][] = $before_note_pos + $before_measure;
+									$lnkey[4][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 15:
+									$lnkey[5][] = $before_note_pos + $before_measure;
+									$lnkey[5][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 18:
+									$lnkey[6][] = $before_note_pos + $before_measure;
+									$lnkey[6][] = (int)$now_measure + $note_pos;
+									continue 2;
+								case 19:
+									$lnkey[7][] = $before_note_pos + $before_measure;
+									$lnkey[7][] = (int)$now_measure + $note_pos;
+									continue 2;
+								}
 							}
 						}
 						
-						switch (substr($channel[0], 3, 2)){
-						case 16:
-							$key[0][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 11:
-							$key[1][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 12:
-							$key[2][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 13:
-							$key[3][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 14:
-							$key[4][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 15:
-							$key[5][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 18:
-							$key[6][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 19:
-							$key[7][(int)$now_measure][] = $note_pos;
-							continue 2;
-						case 56:
-							$lnkey[0] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 51:
-							$lnkey[1] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 52:
-							$lnkey[2] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 53:
-							$lnkey[3] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 54:
-							$lnkey[4] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 55:
-							$lnkey[5] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 58:
-							$lnkey[6] = (int)$now_measure + $note_pos;
-							continue 2;
-						case 59:
-							$lnkey[7] = (int)$now_measure + $note_pos;
-							continue 2;
-						}
 					}
 				}
 
@@ -168,6 +197,30 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 	
 	for($key_num = 0; $key_num <= 7; $key_num++){
 		sort($lnkey[$key_num]);
+		
+		for($i = 0; $i < count($lnkey[$key_num]); $i += 2){
+			$ln_start_measure = floor($lnkey[$key_num][$i]);
+			$ln_end_measure = floor($lnkey[$key_num][$i + 1]);
+			
+			for($now_measure = $ln_start_measure; $now_measure <= $ln_end_measure; $now_measure++){
+				if($ln_start_measure != $now_measure && $ln_end_measure != $now_measure){
+					$ln_pos[$key_num][$now_measure]["start"][] = 0.0;
+					$ln_pos[$key_num][$now_measure]["end"][] = 1.0;
+				}
+				else if($ln_start_measure == $now_measure && $ln_end_measure != $now_measure){
+					(double)$ln_pos[$key_num][$now_measure]["start"][] = (double)($lnkey[$key_num][$i] - floor($lnkey[$key_num][$i]));
+					(double)$ln_pos[$key_num][$now_measure]["end"][] = 1.0;
+				}
+				else if($ln_start_measure != $now_measure && $ln_end_measure == $now_measure){
+					(double)$ln_pos[$key_num][$now_measure]["start"][] = 0.0;
+					(double)$ln_pos[$key_num][$now_measure]["end"][] = (double)($lnkey[$key_num][$i + 1] - (double)floor($lnkey[$key_num][$i + 1]));
+				}
+				else if($ln_start_measure == $now_measure && $ln_end_measure == $now_measure){
+					(double)$ln_pos[$key_num][$now_measure]["start"][] = (double)($lnkey[$key_num][$i] - (double)floor($lnkey[$key_num][$i]));
+					(double)$ln_pos[$key_num][$now_measure]["end"][] = (double)($lnkey[$key_num][$i + 1] - (double)floor($lnkey[$key_num][$i + 1]));
+				}
+			}
+		}
 	}
 	
 	//out json
@@ -185,6 +238,7 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 
 		"lgkey" => $key,
 		"lnkey" => $lnkey,
+		"lnlength" => $ln_pos,
 		
 		/*
 		"landmine" => ,
