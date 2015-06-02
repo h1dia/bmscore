@@ -9,7 +9,7 @@ class DifficultyTable{
 	
 		for($i = 0; $i < count($table); $i++){
 			if($table[$i]->md5 === $md5){
-			    $str = $info->symbol.$table[$i]->level;
+			    $str = $header[0]->name.$table[$i]->level;
 				return $str;
 			}
 		}

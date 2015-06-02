@@ -129,31 +129,30 @@ if($md5_flag){
 	for($i = 0; $i < ($data["measure"] + 1) / 4; $i++){
 		echo '<td class="s" valign="bottom" style="padding-top: 5px; padding-right: 5px;">';
 		
-		// if exist measure num 000
-		if(0){
-			$j = 3;
-		}
-		else{
-			$j = 4;
-		}
 		
-		for(; $j >= 1; $j--){
+		for($j = 4; $j >= 1; $j--){
 			$now_measure = ($i * 4 + $j);
+			
+			// 現在位置が最大小節数よりオーバーしているときは描画しない
 			if($now_measure > $data["measure"])
 				continue;
-				
+			
+			// 小数点変更命令処理
 			if($measure_len[$now_measure] != null){
 				$height_multiply = $measure_len[$now_measure];
 			}
 			else{
 				$height_multiply = 1;
 			}
+			
+			// テーブル描画
 			echo '<table cellpadding="0" cellspacing="0" width="168" style="border:1px white solid" height="'.$height * $height_multiply.'">';
 			echo '<tbody><tr><td class="s" width="134" valign="top"><div class="s" style="width:134px;height:'.$height * $height_multiply.'">';
 			
 			for($bi = 3; $bi > 0; $bi--){
 				echo '<img class="s" src="./pic/bar.gif" style="top:'.($height * $height_multiply * ($bi / 4) - 2).'px;left:0px">';
 			}
+			
 			// draw score:
 			for($key_num = 0; $key_num <= 7; $key_num++){
 				//calc width:

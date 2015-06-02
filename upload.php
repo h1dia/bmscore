@@ -112,6 +112,7 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 									continue 2;
 								case 54:
 									$lnkey[4][] = (int)$now_measure + $note_pos;
+				
 									continue 2;
 								case 55:
 									$lnkey[5][] = (int)$now_measure + $note_pos;
@@ -246,6 +247,35 @@ if(is_uploaded_file($_FILES["file"]["tmp_name"])){
 
 		"difficulty" => $difficulty,
 	);
+	
+	// db
+	
+	$dbtemp = file_get_contents("./db.json");
+	$out = json_decode($dbtemp, true);
+	
+	$table_json = array(
+		"TITLE" => $header_map["TITLE"],
+		"ARTIST" => $header_map["ARTIST"],
+		"md5" => $file_hash,
+	);
+	
+	$table_cnt = 0;
+	$table_flag = false;
+	while($out[$table_cnt]["md5"] != null){
+		if($out[$table_cnt]["md5"] == $file_hash){
+			$table_flag = true;
+			break;
+		}
+	}
+	
+	if($table_flag)
+		$out[$table_cnt] = $table_json;
+	else
+		$out[] = $table_json;
+		
+	file_put_contents("./db.json", json_encode($out));
+	
+	// end of db
 
 	$file_upload_success = file_put_contents($file_name, json_encode($output_json));
 	if(!($file_upload_success === FALSE)){

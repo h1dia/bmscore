@@ -39,7 +39,7 @@
         <!-- リストの配置 -->
         <ul class="nav navbar-nav">
             <li><a href="upload.html">Upload</a></li>
-            <li><a href="uploaded.php">List</a></li>
+            <li class="active"><a href="uploaded.php">List</a></li>
         </ul>
         
           <form class="navbar-form">
@@ -62,18 +62,37 @@
     <body>
     <div class=container>
         
-        <h1>BMScore</h1>
+        <h1>Score List</h1>
         
-        <h3>つかいかた</h3>
-        <p>上のメニューから各コンテンツに移動できます。</br>
-        スマートフォン等では右上のボタンからメニューを表示できます。</p>
+			<div  class="container">
+			    <table class="table">
+			    <thead>
+			      <tr>
+			        <th>Num</th>
+			        <th>Title</th>
+			        <th>Artist</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+					<?php
+					
+					$dbtemp = file_get_contents("./db.json");
+					$out = json_decode($dbtemp, true);
+					
+					for($i = count($out) - 1; $i >= 0; $i--){
+						echo "<tr>";
+						echo "<td>".($i + 1)."</td>";
+						echo "<td><a href=\""."./score.php?md5=".$out[$i]["md5"]."\">".$out[$i]["TITLE"]."</a></td>";
+						echo "<td>".$out[$i]["ARTIST"]."</td>";
+						
+						echo "</tr>";
+					}
+					
+					?>
+			    </tbody>
+			  </table>
+			  </div>
         
-        <p>UploadからBMSファイルをアップロードできます。</br>
-        Listからアップロードされた譜面を確認できます  。</p>
-        
-        <h3>TODO</h3>
-        <p>LN安定化</p>
-        <p>ソフラン等の表示</p>
         
         <div class="row">
         <p class="alert"></p>
